@@ -45,6 +45,9 @@ class Team(models.Model):
     name = models.CharField(max_length=20)
     vote_num = models.IntegerField(default=0)
 
+    def __str__(self):
+        return self.name
+
 
 class User(AbstractBaseUser):
     PART_CHOICES = {
