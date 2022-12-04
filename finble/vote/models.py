@@ -42,17 +42,20 @@ class UserManager(BaseUserManager):
 
 
 class Team(models.Model):
-    team_id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=20)
     vote_num = models.IntegerField(default=0)
 
 
 class User(AbstractBaseUser):
+    PART_CHOICES = {
+        ('front', 'Front-end'),
+        ('back', 'Back-end'),
+    }
     id = models.CharField(max_length=10, primary_key=True)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     email = models.EmailField(max_length=30, unique=True)
     password = models.CharField(max_length=30)
-    part = models.CharField(max_length=10)
+    part = models.CharField(max_length=10, choices=PART_CHOICES)
     name = models.CharField(max_length=10)
     part_voted = models.BooleanField(default=False)
     demo_voted = models.BooleanField(default=False)
