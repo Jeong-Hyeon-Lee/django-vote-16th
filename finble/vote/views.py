@@ -1,3 +1,4 @@
+from django.contrib.auth import authenticate
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
@@ -14,15 +15,14 @@ class JoinView(APIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            user = serializer.save(request)
+            user = serializer.save()
             token = TokenObtainPairSerializer.get_token(user)
             refresh_token = str(token)
             access_token = str(token.access_token)
             res = Response(
                 {
-                    "email": user.email,
-                    "nickname": user.nickname,
-                    "message": "가입이 성공적으로 이뤄졌습니다.",
+                    "user": serializer.data,
+                    "message": "가입이 성공적으로 이루어졌습니다",
                     "token": {
                         "access": access_token,
                         "refresh": refresh_token,
@@ -38,28 +38,29 @@ class JoinView(APIView):
 
 
 class LoginView(APIView):
-    serializer_class = LoginSerializer
-
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-
-        if serializer.is_valid(raise_exception=False):
-            id = serializer.validated_data['id']
-            access = serializer.validated_data['access']
-            refresh = serializer.validated_data['refresh']
-            # data = serializer.validated_data
+        user = authenticate(
+            id=request.data.get("id"), password=request.data.get("password")
+        )
+        if user is not None:
+            serializer = UserSerializer(user)
+            token = TokenObtainPairSerializer.get_token(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
             res = Response(
                 {
-                    "message": "로그인되었습니다.",
-                    "id": id,
-                    "access": access,
-                    "refresh": refresh
+                    "user": serializer.data,
+                    "message": "로그인에 성공했습니다",
+                    "token": {
+                        "access": access_token,
+                        "refresh": refresh_token,
+                    },
                 },
                 status=status.HTTP_200_OK,
             )
             return res
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"존재하지 않는 사용자입니다."}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class VoteResult(APIView):
@@ -69,7 +70,7 @@ class VoteResult(APIView):
         return Response(serializer.data)
 
     def patch(self, request, part):
-        voting_user_instance = get_object_or_404(User, id=request.user)
+        voting_user_instance = get_object_or_404(User, id=self.request.user)
         serializer1 = UserSerializer(instance=voting_user_instance, data={"part_voted": True})
         voted_user_instance = get_object_or_404(User, id=request.data)
         serializer2 = UserSerializer(instance=voted_user_instance, data={"vote_num": voted_user_instance.vote_num + 1})
@@ -80,3 +81,5 @@ class VoteResult(APIView):
                 return Response(serializer2.data, status=201)
             return Response(serializer1.errors, status=400)
         return Response(serializer2.errors, status=400)
+
+

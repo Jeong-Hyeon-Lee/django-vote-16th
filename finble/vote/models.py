@@ -17,28 +17,40 @@ class BaseModel(models.Model):
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, id, team, email, password, part, name):
+    use_in_migrations = True
 
+    def _create_user(self, id, team, email, part, name, password, **extra_fields):
         if not id:
-            raise ValueError('Users must have a id')
-
+            raise ValueError('Users must have an id')
         if not team:
             raise ValueError('Users require a team')
-
         if not email:
             raise ValueError('Users require an email')
-
-        user = self.model(
-            id=id,
-            team=team,
-            email=email,
-            part=part,
-            name=name
-        )
-
+        if not part:
+            raise ValueError('Users require a part')
+        if not name:
+            raise ValueError('Users require a name')
+        email = self.normalize_email(email)
+        user = self.model(self, id=id, team=team, email=email, part=part, name=name, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
+
+    def create_user(self, id, team, email, part, name, password=None, **extra_fields):
+        return self._create_user(self, id, team, email, part, name, password, **extra_fields)
+
+    # def create_superuser(self, id, team, email, part, name, password):
+    #     user = self.create_user(
+    #         id=id,
+    #         team=team,
+    #         email=email,
+    #         part=part,
+    #         name=name,
+    #         password=password
+    #     )
+    #     user.is_admin = True
+    #     user.save(using=self._db)
+    #     return user
 
 
 class Team(models.Model):
@@ -57,7 +69,6 @@ class User(AbstractBaseUser):
     id = models.CharField(max_length=10, primary_key=True)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     email = models.EmailField(max_length=30, unique=True)
-    password = models.CharField(max_length=30)
     part = models.CharField(max_length=10, choices=PART_CHOICES)
     name = models.CharField(max_length=10)
     part_voted = models.BooleanField(default=False)
@@ -66,9 +77,10 @@ class User(AbstractBaseUser):
 
     objects = UserManager()
     USERNAME_FIELD = 'id'
+    REQUIRED_FIELDS = ['team', 'email', 'part', 'name', ]
 
     class Meta:
         db_table = "User"
 
     def __str__(self):
-        return self.id
+        return self.name
