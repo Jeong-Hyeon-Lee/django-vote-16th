@@ -70,16 +70,18 @@ class VoteResult(APIView):
         return Response(serializer.data)
 
     def patch(self, request, part):
-        voting_user_instance = get_object_or_404(User, id=self.request.user)
+        #voting_user_instance = get_object_or_404(User, id=self.request.user)
+        voting_user_instance = self.request.user
         serializer1 = UserSerializer(instance=voting_user_instance, data={"part_voted": True})
-        voted_user_instance = get_object_or_404(User, id=request.data)
+        #voted_user_instance = get_object_or_404(User, id=request.data)
+        voted_user_instance = User.objects.get(id=request.data)
         serializer2 = UserSerializer(instance=voted_user_instance, data={"vote_num": voted_user_instance.vote_num + 1})
         if serializer1.is_valid():
             if serializer2.is_valid():
                 serializer1.save()
                 serializer2.save()
                 return Response(serializer2.data, status=201)
-            return Response(serializer1.errors, status=400)
-        return Response(serializer2.errors, status=400)
+            return Response(serializer2.errors, status=400)
+        return Response(serializer1.errors, status=400)
 
 
