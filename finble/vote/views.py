@@ -1,5 +1,4 @@
 from django.contrib.auth import authenticate
-from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -76,6 +75,28 @@ class VoteResult(APIView):
         #voted_user_instance = get_object_or_404(User, id=request.data)
         voted_user_instance = User.objects.get(id=request.data)
         serializer2 = UserSerializer(instance=voted_user_instance, data={"vote_num": voted_user_instance.vote_num + 1}, partial=True)
+        if serializer1.is_valid():
+            if serializer2.is_valid():
+                serializer1.save()
+                serializer2.save()
+                return Response(serializer2.data, status=201)
+            return Response(serializer2.errors, status=400)
+        return Response(serializer1.errors, status=400)
+
+
+class DemoVoteResult(APIView):
+    def get(self, request):
+        candidates = Team.objects.all()
+        serializer = TeamSerializer(candidates, many=True)
+        return Response(serializer.data)
+
+    def patch(self, request):
+        #voting_user_instance = get_object_or_404(User, id=self.request.user)
+        voting_user_instance = self.request.user
+        serializer1 = UserSerializer(instance=voting_user_instance, data={"part_voted": True}, partial=True)
+        #voted_user_instance = get_object_or_404(User, id=request.data)
+        voted_team_instance = Team.objects.get(id=request.data)
+        serializer2 = TeamSerializer(instance=voted_team_instance, data={"vote_num": voted_team_instance.vote_num + 1}, partial=True)
         if serializer1.is_valid():
             if serializer2.is_valid():
                 serializer1.save()
