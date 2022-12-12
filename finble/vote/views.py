@@ -62,6 +62,15 @@ class LoginView(APIView):
             return Response({"존재하지 않는 사용자입니다."}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class LogoutView(APIView):
+    def post(self, request):
+        response = Response({
+            "message": "Logout success"
+            }, status=status.HTTP_202_ACCEPTED)
+        response.delete_cookie('refresh')
+        return response
+
+
 class VoteResult(APIView):
     def get(self, request, part):
         candidates = User.objects.filter(part=part)
