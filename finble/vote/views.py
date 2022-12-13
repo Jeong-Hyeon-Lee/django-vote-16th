@@ -78,34 +78,45 @@ class VoteResult(APIView):
         return Response(serializer.data)
 
     def patch(self, request, part):
-        voting_user_instance = get_object_or_404(User, id=request.user)
-        serializer1 = UserSerializer(instance=voting_user_instance, data={"part_voted": True}, partial=True)
-        voted_user_instance = get_object_or_404(User, id=request.data)
-        serializer2 = UserSerializer(instance=voted_user_instance, data={"vote_num": voted_user_instance.vote_num + 1}, partial=True)
-        if serializer1.is_valid():
-            if serializer2.is_valid():
-                serializer1.save()
-                serializer2.save()
-                serializer_list = [serializer1.data, serializer2.data]
-                response = {
-                    'status': status.HTTP_200_OK,
-                    'data': serializer_list,
-                }
-                return Response(response)
-            return Response(serializer2.errors, status=400)
-        return Response(serializer1.errors, status=400)
+        voting_user_instance = get_object_or_404(User, id=request.user.id)
+        voted_user_instance = get_object_or_404(User, id=request.data['id'])
+        if voting_user_instance == voted_user_instance:
+            serializer = UserSerializer(instance=voted_user_instance,
+                                        data={"part_voted": True, "vote_num": voted_user_instance.vote_num + 1},
+                                        partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=400)
+        else:
+            serializer1 = UserSerializer(instance=voting_user_instance, data={"part_voted": True}, partial=True)
+            serializer2 = UserSerializer(instance=voted_user_instance,
+                                         data={"vote_num": voted_user_instance.vote_num + 1},
+                                         partial=True)
+            if serializer1.is_valid():
+                if serializer2.is_valid():
+                    serializer1.save()
+                    serializer2.save()
+                    serializer_list = [serializer1.data, serializer2.data]
+                    response = {
+                        'status': status.HTTP_200_OK,
+                        'data': serializer_list,
+                    }
+                    return Response(response)
+                return Response(serializer2.errors, status=400)
+            return Response(serializer1.errors, status=400)
 
 
 class DemoVoteResult(APIView):
-    def get(self):
+    def get(self, request):
         candidates = Team.objects.all()
         serializer = TeamSerializer(candidates, many=True)
         return Response(serializer.data)
 
     def patch(self, request):
-        voting_user_instance = get_object_or_404(User, id=request.user)
+        voting_user_instance = get_object_or_404(User, id=request.user.id)
         serializer1 = UserSerializer(instance=voting_user_instance, data={"part_voted": True}, partial=True)
-        voted_team_instance = get_object_or_404(Team, id=request.data)
+        voted_team_instance = get_object_or_404(Team, id=request.data['id'])
         serializer2 = TeamSerializer(instance=voted_team_instance, data={"vote_num": voted_team_instance.vote_num + 1}, partial=True)
         if serializer1.is_valid():
             if serializer2.is_valid():

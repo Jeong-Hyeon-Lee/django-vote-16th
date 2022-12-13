@@ -39,14 +39,14 @@ class UserManager(BaseUserManager):
     def create_user(self, id, team, email, part, name, password=None, **extra_fields):
         return self._create_user(self, id, team, email, part, name, password, **extra_fields)
 
-    # def create_superuser(self, id, team, email, part, name, password):
+    # def create_superuser(self, id, team, email, part, name, password, **extra_fields):
     #     user = self.create_user(
     #         id=id,
     #         team=team,
     #         email=email,
     #         part=part,
     #         name=name,
-    #         password=password
+    #         password=password,
     #     )
     #     user.is_admin = True
     #     user.save(using=self._db)
@@ -56,6 +56,9 @@ class UserManager(BaseUserManager):
 class Team(models.Model):
     name = models.CharField(max_length=20)
     vote_num = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
 
 
 class User(AbstractBaseUser):
@@ -72,6 +75,22 @@ class User(AbstractBaseUser):
     demo_voted = models.BooleanField(default=False)
     vote_num = models.IntegerField(default=0)
 
+    is_active = models.BooleanField(default=True)
+    is_admin = models.BooleanField(default=False)
+
+    def has_perm(self, perm, obj=None):
+        return True
+
+    def has_module_perms(self, app_label):
+        return True
+
+    @property
+    def is_staff(self):
+        return self.is_admin
+
     objects = UserManager()
     USERNAME_FIELD = 'id'
     REQUIRED_FIELDS = ['team', 'email', 'part', 'name', ]
+
+    def __str__(self):
+        return self.name

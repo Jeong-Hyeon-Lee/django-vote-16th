@@ -4,24 +4,22 @@ from django.contrib.auth.models import User
 from .models import *
 
 
-class BaseModelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BaseModel
-        fields = ['created_at', 'updated_at', 'deleted_at']
+# class BaseModelSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = BaseModel
+#         fields = ['created_at', 'updated_at', 'deleted_at']
 
 
-class TeamSerializer(BaseModelSerializer):
+class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
-        fields = ['team_id', 'name', 'vote_num']
+        fields = '__all__'
 
 
-class UserSerializer(BaseModelSerializer):
-    team = TeamSerializer
-
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'team', 'email', 'password', 'part', 'name', 'part_voted', 'demo_voted', 'vote_num']
+        fields = '__all__'
 
 
 class JoinSerializer(serializers.ModelSerializer):
