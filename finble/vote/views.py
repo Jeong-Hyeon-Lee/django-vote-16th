@@ -119,9 +119,15 @@ class DemoVoteResult(APIView):
 
     def patch(self, request):
         voting_user_instance = get_object_or_404(User, id=request.user.id)
-        serializer1 = UserSerializer(instance=voting_user_instance, data={"part_voted": True}, partial=True)
+
+        if voting_user_instance.demo_voted:
+            return Response({"이미 투표한 사용자입니다."}, status=status.HTTP_200_OK)
+
+        serializer1 = UserSerializer(instance=voting_user_instance, data={"demo_voted": True}, partial=True)
         voted_team_instance = get_object_or_404(Team, id=request.data['id'])
-        serializer2 = TeamSerializer(instance=voted_team_instance, data={"vote_num": voted_team_instance.vote_num + 1}, partial=True)
+        serializer2 = TeamSerializer(instance=voted_team_instance,
+                                     data={"vote_num": voted_team_instance.vote_num + 1},
+                                     partial=True)
         if serializer1.is_valid():
             if serializer2.is_valid():
                 serializer1.save()
