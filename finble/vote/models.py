@@ -57,9 +57,6 @@ class Team(models.Model):
     name = models.CharField(max_length=20)
     vote_num = models.IntegerField(default=0)
 
-    def __str__(self):
-        return self.name
-
 
 class User(AbstractBaseUser):
     PART_CHOICES = {
@@ -78,9 +75,3 @@ class User(AbstractBaseUser):
     objects = UserManager()
     USERNAME_FIELD = 'id'
     REQUIRED_FIELDS = ['team', 'email', 'part', 'name', ]
-
-    class Meta:
-        db_table = "User"
-
-    def __str__(self):
-        return self.name
