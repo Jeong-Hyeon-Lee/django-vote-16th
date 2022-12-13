@@ -79,6 +79,10 @@ class VoteResult(APIView):
 
     def patch(self, request, part):
         voting_user_instance = get_object_or_404(User, id=request.user.id)
+
+        if voting_user_instance.part_voted:
+            return Response({"이미 투표한 사용자입니다."}, status=status.HTTP_200_OK)
+
         voted_user_instance = get_object_or_404(User, id=request.data['id'])
         if voting_user_instance == voted_user_instance:
             serializer = UserSerializer(instance=voted_user_instance,
