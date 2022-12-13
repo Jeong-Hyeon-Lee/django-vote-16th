@@ -73,7 +73,7 @@ class LogoutView(APIView):
 
 class VoteResult(APIView):
     def get(self, request, part):
-        candidates = User.objects.filter(part=part)
+        candidates = User.objects.filter(part=part).order_by('-vote_num')
         serializer = UserSerializer(candidates, many=True)
         return Response(serializer.data)
 
@@ -113,7 +113,7 @@ class VoteResult(APIView):
 
 class DemoVoteResult(APIView):
     def get(self, request):
-        candidates = Team.objects.all()
+        candidates = Team.objects.all().order_by('-vote_num').values()
         serializer = TeamSerializer(candidates, many=True)
         return Response(serializer.data)
 
