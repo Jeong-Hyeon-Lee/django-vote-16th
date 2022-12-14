@@ -6,10 +6,13 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.shortcuts import get_object_or_404
 from .models import *
 from .serializers import *
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 
 
 class JoinView(APIView):
     serializer_class = JoinSerializer
+    permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -37,6 +40,8 @@ class JoinView(APIView):
 
 
 class LoginView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         user = authenticate(
             id=request.data.get("id"), password=request.data.get("password")
@@ -63,6 +68,8 @@ class LoginView(APIView):
 
 
 class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         response = Response({
             "message": "Logout success"
@@ -72,6 +79,8 @@ class LogoutView(APIView):
 
 
 class VoteResult(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get(self, request, part):
         candidates = User.objects.filter(part=part).order_by('-vote_num')
         serializer = UserSerializer(candidates, many=True)
@@ -79,11 +88,14 @@ class VoteResult(APIView):
 
     def patch(self, request, part):
         voting_user_instance = get_object_or_404(User, id=request.user.id)
+        voted_user_instance = get_object_or_404(User, id=request.data['id'])
 
         if voting_user_instance.part_voted:
             return Response({"이미 투표한 사용자입니다."}, status=status.HTTP_200_OK)
 
-        voted_user_instance = get_object_or_404(User, id=request.data['id'])
+        if voting_user_instance.part != voted_user_instance.part:
+            return Response({"같은 파트에만 투표할 수 있습니다."}, status=status.HTTP_200_OK)
+
         if voting_user_instance == voted_user_instance:
             serializer = UserSerializer(instance=voted_user_instance,
                                         data={"part_voted": True, "vote_num": voted_user_instance.vote_num + 1},
@@ -112,6 +124,8 @@ class VoteResult(APIView):
 
 
 class DemoVoteResult(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get(self, request):
         candidates = Team.objects.all().order_by('-vote_num').values()
         serializer = TeamSerializer(candidates, many=True)
@@ -119,12 +133,15 @@ class DemoVoteResult(APIView):
 
     def patch(self, request):
         voting_user_instance = get_object_or_404(User, id=request.user.id)
+        voted_team_instance = get_object_or_404(Team, id=request.data['id'])
 
         if voting_user_instance.demo_voted:
             return Response({"이미 투표한 사용자입니다."}, status=status.HTTP_200_OK)
 
+        if voting_user_instance.team == voted_team_instance:
+            return Response({"본인이 속한 팀에는 투표할 수 없습니다."}, status=status.HTTP_200_OK)
+
         serializer1 = UserSerializer(instance=voting_user_instance, data={"demo_voted": True}, partial=True)
-        voted_team_instance = get_object_or_404(Team, id=request.data['id'])
         serializer2 = TeamSerializer(instance=voted_team_instance,
                                      data={"vote_num": voted_team_instance.vote_num + 1},
                                      partial=True)
