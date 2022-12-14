@@ -6,7 +6,7 @@ app_name = 'vote'
 
 urlpatterns = [
     path('results/<str:part>/', VoteResult.as_view()),
-    path('results/team/demo/', DemoVoteResult.as_view()),
+    path('demo-results/', DemoVoteResult.as_view()),
     path('join/', JoinView.as_view()),
     path('login/', LoginView.as_view()),
     path('login/refresh/', TokenRefreshView.as_view()),
