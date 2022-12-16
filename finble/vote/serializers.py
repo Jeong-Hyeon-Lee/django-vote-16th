@@ -48,6 +48,26 @@ class JoinSerializer(serializers.ModelSerializer):
         return user
 
 
+class JoinBodySerializer(serializers.Serializer):
+    id = serializers.CharField(help_text='아이디', required=True)
+    team = serializers.IntegerField(help_text='프로젝트 팀 아이디', required=True)
+    email = serializers.EmailField(help_text='이메일', required=True)
+    part = serializers.CharField(help_text='파트명 (ex: back, front)', required=True)
+    name = serializers.CharField(help_text='이름', required=True)
+
+
+class VoteBodySerializer(serializers.Serializer):
+    id = serializers.CharField(help_text='투표 받은 사람의 아이디 (ex: ceos)', required=True)
+
+
+class DemoVoteBodySerializer(serializers.Serializer):
+    id = serializers.IntegerField(help_text='투표 받은 팀의 아이디 (ex: 1)', required=True)
+
+
+class LoginBodySerializer(serializers.Serializer):
+    id = serializers.CharField(help_text='아이디 입력', required=True)
+    password = serializers.CharField(help_text='패스워드 입력', write_only=True, required=True)
+
 # class LoginSerializer(serializers.Serializer):
 #     id = serializers.CharField(required=True)
 #     password = serializers.CharField(write_only=True, required=True)

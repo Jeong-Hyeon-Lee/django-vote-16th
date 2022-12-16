@@ -54,7 +54,14 @@ class UserManager(BaseUserManager):
 
 
 class Team(models.Model):
-    name = models.CharField(max_length=20)
+    TEAM_CHOICES = {
+        ('teample', 'Teample'),
+        ('finble', 'Finble'),
+        ('prefolio', 'Pre:folio'),
+        ('diametes', 'diaMEtes'),
+        ('recipeasy', 'recipeasy'),
+    }
+    name = models.CharField(max_length=20, choices=TEAM_CHOICES)
     vote_num = models.IntegerField(default=0)
 
     def __str__(self):
