@@ -8,12 +8,14 @@ from .models import *
 from .serializers import *
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
+from drf_yasg.utils import swagger_auto_schema
 
 
 class JoinView(APIView):
     serializer_class = JoinSerializer
     permission_classes = [AllowAny]
 
+    @swagger_auto_schema(tags=['회원가입'], query_serializer=JoinBodySerializer, responses={200: 'Success'})
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
@@ -42,6 +44,7 @@ class JoinView(APIView):
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
+    @swagger_auto_schema(tags=['로그인'], query_serializer=LoginBodySerializer, responses={200: 'Success'})
     def post(self, request):
         user = authenticate(
             id=request.data.get("id"), password=request.data.get("password")
@@ -86,6 +89,7 @@ class VoteResult(APIView):
         serializer = UserSerializer(candidates, many=True)
         return Response(serializer.data)
 
+    @swagger_auto_schema(tags=['파트장 투표'], query_serializer=VoteBodySerializer, responses={200: 'Success'})
     def patch(self, request, part):
         voting_user_instance = get_object_or_404(User, id=request.user.id)
         voted_user_instance = get_object_or_404(User, id=request.data['id'])
@@ -131,6 +135,7 @@ class DemoVoteResult(APIView):
         serializer = TeamSerializer(candidates, many=True)
         return Response(serializer.data)
 
+    @swagger_auto_schema(tags=['데모데이 투표'], query_serializer=DemoVoteBodySerializer, responses={200: 'Success'})
     def patch(self, request):
         voting_user_instance = get_object_or_404(User, id=request.user.id)
         voted_team_instance = get_object_or_404(Team, id=request.data['id'])
