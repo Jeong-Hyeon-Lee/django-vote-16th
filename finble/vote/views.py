@@ -90,7 +90,7 @@ class VoteResult(APIView):
         return Response(serializer.data)
 
     @swagger_auto_schema(tags=['파트장 투표'], query_serializer=VoteBodySerializer, responses={200: 'Success'})
-    def patch(self, request, part):
+    def patch(self, request):
         voting_user_instance = get_object_or_404(User, id=request.user.id)
         voted_user_instance = get_object_or_404(User, id=request.data['id'])
 
@@ -98,7 +98,7 @@ class VoteResult(APIView):
             return Response({"이미 투표한 사용자입니다."}, status=status.HTTP_200_OK)
 
         if voting_user_instance.part != voted_user_instance.part:
-            return Response({"같은 파트에만 투표할 수 있습니다."}, status=status.HTTP_200_OK)
+            return Response({"자신의 파트에만 투표할 수 있습니다."}, status=status.HTTP_200_OK)
 
         if voting_user_instance == voted_user_instance:
             serializer = UserSerializer(instance=voted_user_instance,

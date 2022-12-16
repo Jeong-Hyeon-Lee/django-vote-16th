@@ -149,3 +149,13 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'UPDATE_LAST_LOGIN': True,
 }
+
+SWAGGER_SETTINGS = {
+      'SECURITY_DEFINITIONS': {
+         'DRF Token': {
+               'type': 'apiKey',
+               'name': 'Authorization',
+               'in': 'header'
+         }
+      }
+   }

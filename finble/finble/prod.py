@@ -1,4 +1,3 @@
-import django
 from .settings import *  # noqa
 
 DEBUG = False
@@ -14,5 +13,3 @@ DATABASES = {
         'PORT': env('DATABASE_PORT'),
     }
 }
-
-django.setup()
