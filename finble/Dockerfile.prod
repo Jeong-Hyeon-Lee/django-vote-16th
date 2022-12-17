@@ -16,7 +16,7 @@ ENV PYTHONUNBUFFERED 1
 RUN apk update && apk add python3 python3-dev mariadb-dev build-base && pip3 install mysqlclient
 
 # install dependencies
-COPY finble/requirements.txt .
+COPY ./requirements.txt .
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
 
 
@@ -38,8 +38,8 @@ RUN addgroup -S app && adduser -S app -G app
 ENV HOME=/home/app
 ENV APP_HOME=/home/app/web
 RUN mkdir $APP_HOME
-RUN mkdir $APP_HOME/finble/static
-RUN mkdir $APP_HOME/finble/media
+RUN mkdir $APP_HOME/static
+RUN mkdir $APP_HOME/media
 WORKDIR $APP_HOME
 
 # install dependencies
