@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'vote',
     'rest_framework_simplejwt',
-    'drf_yasg',
 ]
 
 REST_FRAMEWORK = {
