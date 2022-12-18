@@ -164,3 +164,12 @@ class DemoVoteResult(APIView):
         return Response(serializer1.errors, status=400)
 
 
+class Test(APIView):
+    def get(self, request):
+        res = Response(
+            {
+                "hello world"
+            },
+            status=status.HTTP_200_OK,
+        )
+        return res
