@@ -72,6 +72,8 @@ class User(AbstractBaseUser):
     PART_CHOICES = {
         ('front', 'Front-end'),
         ('back', 'Back-end'),
+        ('design', 'Design'),
+        ('plan', 'Plan')
     }
     id = models.CharField(max_length=10, primary_key=True)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
