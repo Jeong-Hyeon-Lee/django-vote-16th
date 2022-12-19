@@ -3,7 +3,7 @@ services:
 
   db:
     container_name: db
-    image: mariadb:latest
+    image: mysql:5.7
     restart: always
     environment:
       MYSQL_ROOT_HOST: '%'
