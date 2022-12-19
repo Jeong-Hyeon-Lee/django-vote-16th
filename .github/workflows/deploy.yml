@@ -14,11 +14,6 @@ jobs:
     - name: checkout
       uses: actions/checkout@master
 
-    - name: create env file
-      run: |
-        touch .env
-        echo "${{ secrets.ENV_VARS }}" >> .env
-
     - name: create remote directory
       uses: appleboy/ssh-action@master
       with:
@@ -36,6 +31,11 @@ jobs:
         remote_user: ubuntu
         remote_key: ${{ secrets.KEY }}
 
+    - name: create env file
+      run: |
+        touch /home/ubuntu/srv/ubuntu/finble/.env
+        echo "${{ secrets.ENV_VARS }}" >> .env
+
     - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@master
       with:
@@ -43,4 +43,4 @@ jobs:
         username: ubuntu
         key: ${{ secrets.KEY }}
         script: |
-          sh /home/ubuntu/srv/ubuntu/config/scripts/deploy.sh
+          sh /home/ubuntu/srv/ubuntu/finble/config/scripts/deploy.sh
