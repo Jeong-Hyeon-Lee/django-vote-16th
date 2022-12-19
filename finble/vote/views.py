@@ -90,7 +90,7 @@ class VoteResult(APIView):
         return Response(serializer.data)
 
     # @swagger_auto_schema(tags=['파트장 투표'], query_serializer=VoteBodySerializer, responses={200: 'Success'})
-    def patch(self, request):
+    def patch(self, request, part):
         voting_user_instance = get_object_or_404(User, id=request.user.id)
         voted_user_instance = get_object_or_404(User, id=request.data['id'])
 
