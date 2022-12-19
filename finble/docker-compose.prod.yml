@@ -10,7 +10,7 @@ services:
     environment:
       DJANGO_SETTINGS_MODULE: finble.prod
     env_file:
-      - /home/ubuntu/.env
+      - /home/ubuntu/srv/ubuntu/.env
     volumes:
       - static:/home/app/web/static
       - media:/home/app/web/media
