@@ -58,7 +58,7 @@ RUN apk del build-deps
 COPY ./config/docker/entrypoint.prod.sh $APP_HOME
 
 # copy project
-COPY ./finble $APP_HOME
+COPY . $APP_HOME
 
 # chown all the files to the app user
 RUN chown -R app:app $APP_HOME
