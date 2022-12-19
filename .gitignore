@@ -259,4 +259,4 @@ fabric.properties
 /.idea/
 
 # finble/vote/migrations
-/.env.prod
+finble/.env.prod
