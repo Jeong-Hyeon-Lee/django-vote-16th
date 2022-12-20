@@ -65,6 +65,7 @@ class Candidate(models.Model):
     }
     name = models.CharField(max_length=20)
     part = models.CharField(max_length=10, choices=PART_CHOICES)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
     vote_num = models.IntegerField(default=0)
 
     def __str__(self):
