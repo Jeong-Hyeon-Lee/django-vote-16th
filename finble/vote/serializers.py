@@ -4,15 +4,14 @@ from django.contrib.auth.models import User
 from .models import *
 
 
-# class BaseModelSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = BaseModel
-#         fields = ['created_at', 'updated_at', 'deleted_at']
-
-
 class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
+        fields = '__all__'
+
+class CandidateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Candidate
         fields = '__all__'
 
 

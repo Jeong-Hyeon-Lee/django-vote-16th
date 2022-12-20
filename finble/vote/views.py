@@ -85,46 +85,37 @@ class VoteResult(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request, part):
-        candidates = User.objects.filter(part=part).order_by('-vote_num')
-        serializer = UserSerializer(candidates, many=True)
+        candidates = Candidate.objects.filter(part=part).order_by('-vote_num')
+        serializer = CandidateSerializer(candidates, many=True)
         return Response(serializer.data)
 
     # @swagger_auto_schema(tags=['파트장 투표'], query_serializer=VoteBodySerializer, responses={200: 'Success'})
     def patch(self, request, part):
         voting_user_instance = get_object_or_404(User, id=request.user.id)
-        voted_user_instance = get_object_or_404(User, id=request.data['id'])
+        voted_candidate_instance = get_object_or_404(Candidate, id=request.data['id'])
 
         if voting_user_instance.part_voted:
             return Response({"이미 투표한 사용자입니다."}, status=status.HTTP_200_OK)
 
-        if voting_user_instance.part != voted_user_instance.part:
+        if voting_user_instance.part != voted_candidate_instance.part:
             return Response({"자신의 파트에만 투표할 수 있습니다."}, status=status.HTTP_200_OK)
 
-        if voting_user_instance == voted_user_instance:
-            serializer = UserSerializer(instance=voted_user_instance,
-                                        data={"part_voted": True, "vote_num": voted_user_instance.vote_num + 1},
-                                        partial=True)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=400)
-        else:
-            serializer1 = UserSerializer(instance=voting_user_instance, data={"part_voted": True}, partial=True)
-            serializer2 = UserSerializer(instance=voted_user_instance,
-                                         data={"vote_num": voted_user_instance.vote_num + 1},
-                                         partial=True)
-            if serializer1.is_valid():
-                if serializer2.is_valid():
-                    serializer1.save()
-                    serializer2.save()
-                    serializer_list = [serializer1.data, serializer2.data]
-                    response = {
-                        'status': status.HTTP_200_OK,
-                        'data': serializer_list,
-                    }
-                    return Response(response)
-                return Response(serializer2.errors, status=400)
-            return Response(serializer1.errors, status=400)
+        serializer1 = UserSerializer(instance=voting_user_instance, data={"part_voted": True}, partial=True)
+        serializer2 = CandidateSerializer(instance=voted_candidate_instance,
+                                     data={"vote_num": voted_candidate_instance.vote_num + 1},
+                                     partial=True)
+        if serializer1.is_valid():
+            if serializer2.is_valid():
+                serializer1.save()
+                serializer2.save()
+                serializer_list = [serializer1.data, serializer2.data]
+                response = {
+                    'status': status.HTTP_200_OK,
+                    'data': serializer_list,
+                }
+                return Response(response)
+            return Response(serializer2.errors, status=400)
+        return Response(serializer1.errors, status=400)
 
 
 class DemoVoteResult(APIView):
@@ -162,14 +153,3 @@ class DemoVoteResult(APIView):
                 return Response(response)
             return Response(serializer2.errors, status=400)
         return Response(serializer1.errors, status=400)
-
-
-class Test(APIView):
-    def get(self, request):
-        res = Response(
-            {
-                "hello world"
-            },
-            status=status.HTTP_200_OK,
-        )
-        return res

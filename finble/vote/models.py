@@ -3,19 +3,6 @@ from django.utils import timezone
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 
-class BaseModel(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(null=True, default=None)
-
-    class Meta:
-        abstract = True
-
-    def delete(self, using=None, keep_parents=False):
-        self.deleted_at = timezone.now()
-        self.save()
-
-
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
@@ -62,7 +49,22 @@ class Team(models.Model):
         ('recipeasy', 'recipeasy'),
     }
     name = models.CharField(max_length=20, choices=TEAM_CHOICES)
-    explanation = models.CharField(max_length=200, default=None)
+    description = models.CharField(max_length=200, default=None)
+    vote_num = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+
+class Candidate(models.Model):
+    PART_CHOICES = {
+        ('front', 'Front-end'),
+        ('back', 'Back-end'),
+        ('design', 'Design'),
+        ('plan', 'Plan')
+    }
+    name = models.CharField(max_length=20)
+    part = models.CharField(max_length=10, choices=PART_CHOICES)
     vote_num = models.IntegerField(default=0)
 
     def __str__(self):
