@@ -62,6 +62,7 @@ class Team(models.Model):
         ('recipeasy', 'recipeasy'),
     }
     name = models.CharField(max_length=20, choices=TEAM_CHOICES)
+    explanation = models.CharField(max_length=200, default=None)
     vote_num = models.IntegerField(default=0)
 
     def __str__(self):
