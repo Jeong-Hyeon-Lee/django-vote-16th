@@ -95,10 +95,10 @@ class VoteResult(APIView):
         voted_candidate_instance = get_object_or_404(Candidate, id=request.data['id'])
 
         if voting_user_instance.part_voted:
-            return Response({"이미 투표한 사용자입니다."}, status=status.HTTP_200_OK)
+            return Response({"이미 투표한 사용자입니다."}, status=status.HTTP_208_ALREADY_REPORTED)
 
         if voting_user_instance.part != voted_candidate_instance.part:
-            return Response({"자신의 파트에만 투표할 수 있습니다."}, status=status.HTTP_200_OK)
+            return Response({"자신의 파트에만 투표할 수 있습니다."}, status=status.HTTP_202_ACCEPTED)
 
         serializer1 = UserSerializer(instance=voting_user_instance, data={"part_voted": True}, partial=True)
         serializer2 = CandidateSerializer(instance=voted_candidate_instance,
@@ -132,10 +132,10 @@ class DemoVoteResult(APIView):
         voted_team_instance = get_object_or_404(Team, id=request.data['id'])
 
         if voting_user_instance.demo_voted:
-            return Response({"이미 투표한 사용자입니다."}, status=status.HTTP_200_OK)
+            return Response({"이미 투표한 사용자입니다."}, status=status.HTTP_208_ALREADY_REPORTED)
 
         if voting_user_instance.team == voted_team_instance:
-            return Response({"본인이 속한 팀에는 투표할 수 없습니다."}, status=status.HTTP_200_OK)
+            return Response({"본인이 속한 팀에는 투표할 수 없습니다."}, status=status.HTTP_202_ACCEPTED)
 
         serializer1 = UserSerializer(instance=voting_user_instance, data={"demo_voted": True}, partial=True)
         serializer2 = TeamSerializer(instance=voted_team_instance,
