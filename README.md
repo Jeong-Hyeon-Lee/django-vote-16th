@@ -27,10 +27,10 @@ vote_num: 득표수 (default = 0)
 #### User: 회원 테이블
 id: 회원가입 시 유저가 직접 입력  
 password: 회원가입 시 유저가 직접 입력  
-team: 소속 팀 (주어진 choice 안에서 선택)
-email: 이메일
-part: 소속 파트(front, back)
-name: 이름
+team: 소속 팀 (team 테이블 참조)  
+email: 이메일  
+part: 소속 파트(front, back, design, plan)  
+name: 이름  
 part_voted: 파트장 투표 여부 (default = False)   
 demo_voted: 데모데이 투표 여부 (default = False)  
 
