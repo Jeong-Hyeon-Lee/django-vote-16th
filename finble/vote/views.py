@@ -34,7 +34,6 @@ class JoinView(APIView):
                 },
                 status=status.HTTP_201_CREATED,
             )
-            res.set_cookie("access", access_token, httponly=True)
             res.set_cookie("refresh", refresh_token, httponly=True)
             return res
 
@@ -65,9 +64,10 @@ class LoginView(APIView):
                 },
                 status=status.HTTP_200_OK,
             )
+            res.set_cookie("refresh", refresh_token, httponly=True)
             return res
         else:
-            return Response({"아이디 혹은 패스퉈드 오류입니다."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"아이디 또는 패스워드 오류입니다."}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutView(APIView):
