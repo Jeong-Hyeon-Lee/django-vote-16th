@@ -13,12 +13,6 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticate
 # from drf_yasg.utils import swagger_auto_schema
 import re
 
-def contains_special_character(value):
-    for char in value:
-        if char in string.punctuation:
-            return True
-    return False
-
 
 class JoinView(APIView):
     serializer_class = JoinSerializer
