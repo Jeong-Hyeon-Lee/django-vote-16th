@@ -1,3 +1,5 @@
+import string
+
 from django.contrib.auth import authenticate
 from rest_framework import status
 from rest_framework.views import APIView
@@ -9,6 +11,13 @@ from .serializers import *
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 # from drf_yasg.utils import swagger_auto_schema
+import re
+
+def contains_special_character(value):
+    for char in value:
+        if char in string.punctuation:
+            return True
+    return False
 
 
 class JoinView(APIView):
@@ -17,6 +26,12 @@ class JoinView(APIView):
 
     # @swagger_auto_schema(tags=['회원가입'], query_serializer=JoinBodySerializer, responses={200: 'Success'})
     def post(self, request):
+        # 비밀번호 유효성 검사
+        pw = request.data.get('password')
+        regex_pw = '^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}'
+        if not re.match(regex_pw, pw):
+            return Response({"8자 이상의 영문 대/소문자, 숫자, 특수문자 조합을 입력해주세요."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
