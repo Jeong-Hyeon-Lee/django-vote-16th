@@ -86,7 +86,6 @@ class User(AbstractBaseUser):
     name = models.CharField(max_length=10)
     part_voted = models.BooleanField(default=False)
     demo_voted = models.BooleanField(default=False)
-    vote_num = models.IntegerField(default=0)
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
